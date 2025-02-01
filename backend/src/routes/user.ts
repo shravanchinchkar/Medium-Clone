@@ -11,32 +11,18 @@ export const userRouter = new Hono<{
   };
 }>().basePath("/user");
 
-
-// const digestStream = new crypto.DigestStream("SHA-256");
-
 //following is the signin route of the user
+//Missing points in this route are zod validation, password hashing
 userRouter.post("/signup", async (c) => {
+  // The environment variable is accessible only inside an route in prisma, so we need to initialize the prisma client in each route
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+  }).$extends(withAccelerate()); //this line is imp. if we are using prisma offering acclerate functionality for DB Pooling
 
   //following line get the body from the user
   const body = await c.req.json();
 
-  //check if email already exists in the DB
-  const checkEmail = await prisma.user.findFirst({
-    where: {
-      email: body.email,
-    },
-  });
-
-  //if exists return the error
-  if (checkEmail) {
-    // c.status(403);
-    console.log("Email already exists!");
-    return c.json({ error: "Email already exists!" });
-  } else {
-    //if not then create the user account
+  try {
     const user = await prisma.user.create({
       data: {
         email: body.email,
@@ -44,17 +30,21 @@ userRouter.post("/signup", async (c) => {
         password: body.password,
       },
     });
+
     console.log("created user is:", user);
     console.log("secret key:", c.env.JWT_SECRET);
 
-    //usually we the thing that we need to sign with is Id of the user, so we have taken the id of the user
+    //usually the thing that we need to sign with is Id of the user, so we have taken the id of the user
     //create a token for the user who has signedup
     const token = await sign({ id: user.id }, c.env.JWT_SECRET);
 
     return c.json({
-      //return the token
-      token: token,
+      message: "SignedUp!",
+      token: token, //return the token
     });
+  } catch (err) {
+    c.status(411);
+    return c.json({ message: "Email already exists!" });
   }
 });
 
@@ -67,25 +57,27 @@ userRouter.post("/signin", async (c) => {
   //following line get the body from the user
   const body = await c.req.json();
 
-  //check if the user is present in the DB
-  const checkUser = await prisma.user.findUnique({
-    where: {
-      email: body.email,
-      password: body.password,
-    },
-  });
-
-  //if the user is doesn't exixts return the following message
-  if (!checkUser) {
-    c.status(403);
-    return c.json({ error: "Invalid Credentials" });
-  } else {
-
-    console.log("user is:",checkUser);
-    const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET); //create a token for the user who has signedup
-    return c.json({
-      //return the token
-      token: token,
+  try {
+    //check if the user is present in the DB
+    const checkUser = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+        password: body.password,
+      },
     });
+    if (!checkUser) {
+      c.status(403);
+      return c.json({ error: "Invalid Credentials" });
+    } else {
+      console.log("user is:", checkUser);
+      const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET); //create a token for the user who has signedup
+      return c.json({
+        message:"SignedIn successful!",
+        token: token, //return the token
+      });
+    }
+  } catch (e) {
+    c.status(403);
+    return c.json({ message: "Something went wrong" });
   }
 });
