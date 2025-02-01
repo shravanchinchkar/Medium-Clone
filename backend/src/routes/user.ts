@@ -11,6 +11,9 @@ export const userRouter = new Hono<{
   };
 }>().basePath("/user");
 
+
+// const digestStream = new crypto.DigestStream("SHA-256");
+
 //following is the signin route of the user
 userRouter.post("/signup", async (c) => {
   const prisma = new PrismaClient({
@@ -31,7 +34,7 @@ userRouter.post("/signup", async (c) => {
   if (checkEmail) {
     // c.status(403);
     console.log("Email already exists!");
-    return c.json({ message: "Email already exists!" });
+    return c.json({ error: "Email already exists!" });
   } else {
     //if not then create the user account
     const user = await prisma.user.create({
@@ -75,7 +78,7 @@ userRouter.post("/signin", async (c) => {
   //if the user is doesn't exixts return the following message
   if (!checkUser) {
     c.status(403);
-    return c.json({ message: "Invalid Credentials" });
+    return c.json({ error: "Invalid Credentials" });
   } else {
 
     console.log("user is:",checkUser);
