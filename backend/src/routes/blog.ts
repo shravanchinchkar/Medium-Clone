@@ -2,6 +2,9 @@ import { Hono } from "hono";
 import { authMiddleware } from "../middleWare";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
+import { createBlogInput } from "@shravanchinchkar/medium-common";
+import { updateBlogInput } from "@shravanchinchkar/medium-common";
+
 export const blogRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
@@ -19,7 +22,6 @@ export const blogRouter = new Hono<{
 blogRouter.use("/*", authMiddleware);
 
 //following route create the blog
-
 blogRouter.post("/", async (c) => {
   console.log("In POST route for Blog!");
   const prisma = new PrismaClient({
@@ -27,25 +29,31 @@ blogRouter.post("/", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
-  const userId = c.get("userId");
-  console.log("userId is :", userId);
+  const { success } = createBlogInput.safeParse(body);
 
-  try {
-    const createdBlog = await prisma.blog.create({
-      data: {
-        authorId: userId,
-        title: body.title,
-        content: body.content,
-      },
-    });
-    return c.json({
-      message: "Blog Created!",
-      blog: createdBlog,
-    });
-  } catch (err) {
-    console.log(err);
-    c.status(403);
-    return c.json({ message: "Can't Upload the Blog!" });
+  if (!success) {
+    c.status(411);
+    return c.json({ message: "Incorrect Inputs!" });
+  } else {
+    try {
+      const userId = c.get("userId");
+      console.log("userId is :", userId);
+      const createdBlog = await prisma.blog.create({
+        data: {
+          authorId: userId,
+          title: body.title,
+          content: body.content,
+        },
+      });
+      return c.json({
+        message: "Blog Created!",
+        blog: createdBlog,
+      });
+    } catch (err) {
+      console.log(err);
+      c.status(403);
+      return c.json({ message: "Can't Upload the Blog!" });
+    }
   }
 });
 
@@ -57,28 +65,34 @@ blogRouter.put("/", async (c) => {
   }).$extends(withAccelerate());
 
   const body = await c.req.json();
+  const { success } = updateBlogInput.safeParse(body);
 
-  try {
-    const updatedBlog = await prisma.blog.update({
-      where: {
-        id: body.id,
-      },
-      data: {
-        title: body.title,
-        content: body.content,
-      },
-    });
-    return c.json({
-      message: "Blog Updated!",
-      updatedBlog: updatedBlog,
-    });
-  } catch (err) {
-    console.log(err);
-    c.status(403);
-    return c.json({
-      blogId: body.id,
-      message: "Can't Update the Blog!",
-    });
+  if (!success) {
+    c.status(411);
+    return c.json({ message: "Incorrect Inputs!" });
+  } else {
+    try {
+      const updatedBlog = await prisma.blog.update({
+        where: {
+          id: body.id,
+        },
+        data: {
+          title: body.title,
+          content: body.content,
+        },
+      });
+      return c.json({
+        message: "Blog Updated!",
+        updatedBlog: updatedBlog,
+      });
+    } catch (err) {
+      console.log(err);
+      c.status(403);
+      return c.json({
+        blogId: body.id,
+        message: "Can't Update the Blog!",
+      });
+    }
   }
 });
 
@@ -109,8 +123,8 @@ blogRouter.get("/:id", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-    const reqParams = c.req.param("id");
-//   const body = await c.req.json();
+  const reqParams = c.req.param("id");
+  //   const body = await c.req.json();
 
   try {
     const findBlog = await prisma.blog.findFirst({

@@ -14,6 +14,9 @@ importers:
       '@prisma/extension-accelerate':
         specifier: ^1.2.1
         version: 1.2.1(@prisma/client@6.3.0(prisma@6.3.0))
+      '@shravanchinchkar/medium-common':
+        specifier: ^1.0.5
+        version: 1.0.5
       hono:
         specifier: ^4.6.19
         version: 4.6.19
@@ -259,6 +262,9 @@ packages:
 
   '@prisma/get-platform@6.3.0':
     resolution: {integrity: sha512-V8zZ1d0xfyi6FjpNP4AcYuwSpGcdmu35OXWnTPm8IW594PYALzKXHwIa9+o0f+Lo9AecFWrwrwaoYe56UNfTtQ==}
+
+  '@shravanchinchkar/medium-common@1.0.5':
+    resolution: {integrity: sha512-kDjTb2JjVADO4sr0zf6Fbi80PC5ZQ+mKZAtCFiT/zEn/ZAg2pJ/kiQVAoVbVYHNcEjZOzlVOLmcCQxzoBYM0lw==}
 
   acorn-walk@8.3.4:
     resolution: {integrity: sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==}
@@ -595,6 +601,10 @@ snapshots:
   '@prisma/get-platform@6.3.0':
     dependencies:
       '@prisma/debug': 6.3.0
+
+  '@shravanchinchkar/medium-common@1.0.5':
+    dependencies:
+      zod: 3.24.1
 
   acorn-walk@8.3.4:
     dependencies:
