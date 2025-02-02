@@ -4,6 +4,8 @@ import { withAccelerate } from "@prisma/extension-accelerate"; //this command is
 import { sign } from "hono/jwt";
 import { signupInput,signinInput } from "@shravanchinchkar/medium-common";
 
+// DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNmVkZWZlMGUtZTdiMC00YTdiLTk5NTQtOGUzODE5OWFmZmRiIiwidGVuYW50X2lkIjoiOTI3NGU3NWFmYjYwZDJlNmIzYzY4ZTliODBlZThjNTljYzM3MWI5YzIwZjJlMzQ4YzQzOTVjMDQzMzFiODQ0MSIsImludGVybmFsX3NlY3JldCI6IjcyNDc0YTY0LWU4NDAtNGYyZC04YzkxLThiMDdmMzY1YTE2NSJ9.e8bCn4biras2V61O6RZf4rYZrYERq0R8kFDXin7595Q"
+
 //Whenever we have an environment variable we need to pass a generic has below, so that hono understand the DATABASE_URL is a string and it dose not gives the error
 export const userRouter = new Hono<{
   Bindings: {
