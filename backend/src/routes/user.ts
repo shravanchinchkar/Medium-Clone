@@ -2,8 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate"; //this command is used to run prisma in acclerate mode, means it helps to connect to the connection pool not directly to the DB
 import { sign } from "hono/jwt";
-import { signupInput } from "@shravanchinchkar/medium-common";
-import { signinInput } from "@shravanchinchkar/medium-common";
+import { signupInput,signinInput } from "@shravanchinchkar/medium-common";
 
 //Whenever we have an environment variable we need to pass a generic has below, so that hono understand the DATABASE_URL is a string and it dose not gives the error
 export const userRouter = new Hono<{
@@ -62,7 +61,6 @@ userRouter.post("/signin", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  //following line get the body from the user
   const body = await c.req.json();
   const { success } = signinInput.safeParse(body);
 
@@ -71,7 +69,6 @@ userRouter.post("/signin", async (c) => {
     return c.json({ message: "Incorrect Inputs!" });
   } else {
     try {
-      //check if the user is present in the DB
       const checkUser = await prisma.user.findUnique({
         where: {
           email: body.email,
@@ -83,10 +80,10 @@ userRouter.post("/signin", async (c) => {
         return c.json({ error: "Invalid Credentials" });
       } else {
         console.log("user is:", checkUser);
-        const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET); //create a token for the user who has signedup
+        const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET);
         return c.json({
           message: "SignedIn successful!",
-          token: token, //return the token
+          token: token, 
         });
       }
     } catch (e) {

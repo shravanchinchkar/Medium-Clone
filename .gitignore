@@ -14,7 +14,7 @@ wrangler.json
 
 # deps
 node_modules/
-.wrangler
+# .wrangler
 
 # env
 .env
