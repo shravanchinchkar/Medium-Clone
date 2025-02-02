@@ -4,13 +4,13 @@ import { withAccelerate } from "@prisma/extension-accelerate"; //this command is
 import { sign } from "hono/jwt";
 import { signupInput,signinInput } from "@shravanchinchkar/medium-common";
 
-// DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNmVkZWZlMGUtZTdiMC00YTdiLTk5NTQtOGUzODE5OWFmZmRiIiwidGVuYW50X2lkIjoiOTI3NGU3NWFmYjYwZDJlNmIzYzY4ZTliODBlZThjNTljYzM3MWI5YzIwZjJlMzQ4YzQzOTVjMDQzMzFiODQ0MSIsImludGVybmFsX3NlY3JldCI6IjcyNDc0YTY0LWU4NDAtNGYyZC04YzkxLThiMDdmMzY1YTE2NSJ9.e8bCn4biras2V61O6RZf4rYZrYERq0R8kFDXin7595Q"
-
-
-//29cd964276da72a331f31950df826d283271c2b5
-// myshravansecret2607
-
 //Whenever we have an environment variable we need to pass a generic has below, so that hono understand the DATABASE_URL is a string and it dose not gives the error
+
+//Following is the cnnection Pool URL:
+//  prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNmVkZWZlMGUtZTdiMC00YTdiLTk5NTQtOGUzODE5OWFmZmRiIiwidGVuYW50X2lkIjoiOTI3NGU3NWFmYjYwZDJlNmIzYzY4ZTliODBlZThjNTljYzM3MWI5YzIwZjJlMzQ4YzQzOTVjMDQzMzFiODQ0MSIsImludGVybmFsX3NlY3JldCI6IjcyNDc0YTY0LWU4NDAtNGYyZC04YzkxLThiMDdmMzY1YTE2NSJ9.e8bCn4biras2V61O6RZf4rYZrYERq0R8kFDXin7595Q
+
+// Following is the JWT Secret:-
+//prod_shravchinchkar2610200313
 export const userRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
