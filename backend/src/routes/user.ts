@@ -18,9 +18,9 @@ export const userRouter = new Hono<{
   };
 }>().basePath("/user");
 
-//following is the signin route of the user
 //Todo:- password hashing
 userRouter.post("/signup", async (c) => {
+  console.log("signup route called!")
   // The environment variable is accessible only inside an route in prisma, so we need to initialize the prisma client in each route
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -28,9 +28,15 @@ userRouter.post("/signup", async (c) => {
 
   //following line get the body from the user
   const body = await c.req.json();
+  console.log("signup body:",body);
+
   const { success } = signupInput.safeParse(body);
+  const zodData= signupInput.safeParse(body);
+
 
   if (!success) {
+    console.log("zod data:",zodData)
+    console.log("zod failed!")
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
   } else {
@@ -44,7 +50,6 @@ userRouter.post("/signup", async (c) => {
       });
 
       console.log("created user is:", user);
-      console.log("secret key:", c.env.JWT_SECRET);
 
       //usually the thing that we need to sign with is Id of the user, so we have taken the id of the user
       //create a token for the user who has signedup
