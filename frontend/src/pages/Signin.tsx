@@ -1,15 +1,16 @@
 import axios from "axios";
 import { useState } from "react";
+import {toast} from "react-toastify"
 import { BACKEND_URL } from "../config";
 import { useRecoilState } from "recoil";
 import { Quote } from "../components/Quote";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated, isSubmitting } from "../store/atom/atom";
 import { AuthButton } from "../components/AuthButton";
 import { AuthHeader } from "../components/AuthHeader";
 import { LabeledInput } from "../components/LabeledInput";
 import { SigninInputs } from "@shravanchinchkar/medium-common";
 import { SubmittingButton } from "../components/SubmittingButton";
+import { isAuthenticated, isSubmitting } from "../store/atom/atom";
 
 export const Signin = () => {
   const [signinInputs, setsigninInputs] = useState<SigninInputs>({
@@ -34,10 +35,11 @@ export const Signin = () => {
       setIsAuth(localStorage.getItem("mediumToken"));
       console.log("isAut form Signin component!", isAuth);
       navigate("/blogs");
+      toast("Login Successful",{position:"bottom-right",type:"success",theme:"light",autoClose:2000})
     } catch (err) {
       setIsSubmit(false);
       console.log(err);
-      alert("Login Fail!");
+      toast.error("Invalid Credentials!",{position:"bottom-right",type:"error",theme:"light",autoClose:2000});
     }
   }
   return (

@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Avatar } from "./Avatar";
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { isAuthenticated } from "../store/atom/atom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isAuthenticated, isPublished } from "../store/atom/atom";
 import { Link } from "react-router-dom";
 import { WriteBlogButton } from "./WriteBlogButton";
-
+import { PublishBlogButton } from "./PublishBlogButton";
+import {toast} from "react-toastify"
+ 
 export const AppBar = ({ initialLetter }: { initialLetter: string }) => {
+  const navigate = useNavigate();
   const [display, setDisplay] = useState(false);
   const setIsAuth = useSetRecoilState(isAuthenticated);
-  const navigate = useNavigate();
+  const isPublish=useRecoilValue(isPublished);
 
   function displayLogOut() {
     if (!display) {
@@ -24,6 +27,8 @@ export const AppBar = ({ initialLetter }: { initialLetter: string }) => {
     setIsAuth(token);
     setDisplay(false);
     navigate("/");
+    toast("Signout Successful",{position:"bottom-right",type:"success",theme:"light",autoClose:2000})
+    
   }
 
   return (
@@ -35,9 +40,13 @@ export const AppBar = ({ initialLetter }: { initialLetter: string }) => {
       </Link>
 
       <div className="flex w-[290px] justify-between items-center px-[2rem]">
-        <Link to={"/writeblog"}>
-          <WriteBlogButton />
-        </Link>
+
+        {/* Following is div consist of write and Publish Button */}
+       {!isPublish?<Link to={"/new-story"}>
+          <WriteBlogButton/>
+        </Link>:null}
+
+       {isPublish?<PublishBlogButton/>:null}
 
         <button className="relative cursor-pointer" onClick={displayLogOut}>
           <Avatar initialLetter={initialLetter} />

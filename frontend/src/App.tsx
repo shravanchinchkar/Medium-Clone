@@ -57,7 +57,7 @@ function App() {
             }
           ></Route>
           <Route
-            path="/writeblog"
+            path="/new-story"
             element={
               <PrivateRouteWrapper>
                 <WriteBlog />

@@ -10,6 +10,7 @@ interface Blogs {
   author: {
     name: string;
   };
+  createdAt:string
 }
 
 export const useBlogs = () => {

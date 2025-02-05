@@ -2,27 +2,32 @@ import { useEffect, useState } from "react";
 import { Avatar } from "./Avatar";
 import { getInitialLetters } from "../utils/getinitialLetters";
 import { Link } from "react-router-dom";
+import { formatDate } from "../utils/formatDate";
 
 interface BlogCardProps {
   id:string,
   authorName: string;
-  publishedDate: string;
+  createdAt: string;
   title: string;
   content: string;
 }
 export const BlogCard = ({
   id,
   authorName,
-  publishedDate,
+  createdAt,
   title,
   content,
 }: BlogCardProps) => {
   const [initialLetters, setinitialLetters] = useState("");
+  const [date,setDate]=useState("");
 
   useEffect(() => {
     console.log("Author initial effect called");
     const response = getInitialLetters(authorName);
     setinitialLetters(response);
+    const formatedDate=formatDate(createdAt);
+    console.log("formated Date:",formatedDate)
+    setDate(formatedDate);
   }, []);
 
   return (
@@ -34,7 +39,7 @@ export const BlogCard = ({
           <div className="text-[#0033C2] font-semibold">{authorName}.</div>
           {/* <div className="bg-gray-400 w-[3.5px] h-[3.5px] rounded-[50%]">&#9679;</div> */}
           <div className="text-gray-500 text-[10px]">&#9679;</div>
-          <div>{publishedDate}</div>
+          <div>{date}</div>
         </div>
 
         {/* Following is the title and content */}
