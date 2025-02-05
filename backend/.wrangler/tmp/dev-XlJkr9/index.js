@@ -11243,10 +11243,10 @@ var require_dist = __commonJS({
   }
 });
 
-// .wrangler/tmp/bundle-eoSL0M/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-8SD0M0/middleware-loader.entry.ts
 init_modules_watch_stub();
 
-// .wrangler/tmp/bundle-eoSL0M/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-8SD0M0/middleware-insertion-facade.js
 init_modules_watch_stub();
 
 // src/index.ts
@@ -12858,282 +12858,6 @@ var Hono2 = /* @__PURE__ */ __name(class extends Hono {
 
 // src/routes/user.ts
 init_modules_watch_stub();
-var import_edge = __toESM(require_edge3());
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/entry.fetch.js
-init_modules_watch_stub();
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/extension.js
-init_modules_watch_stub();
-var import_default_index2 = __toESM(require_default_index(), 1);
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/semver.js
-init_modules_watch_stub();
-function compareSemVer(a, b) {
-  const [major1 = 0, minor1 = 0, patch1 = 0] = a.split(".").map(Number);
-  const [major2 = 0, minor2 = 0, patch2 = 0] = b.split(".").map(Number);
-  const major = major2 - major1;
-  const minor = minor2 - minor1;
-  const patch = patch2 - patch1;
-  return major || minor || patch;
-}
-__name(compareSemVer, "compareSemVer");
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/user-agent.js
-init_modules_watch_stub();
-var import_default_index = __toESM(require_default_index(), 1);
-function getUserAgent() {
-  const prismaVersion = import_default_index.default.Prisma.prismaVersion;
-  const parts = [
-    getRuntimeSegment(),
-    `PrismaEngine/${prismaVersion.engine}`,
-    `PrismaClient/${prismaVersion.client}`
-  ];
-  return parts.join(" ");
-}
-__name(getUserAgent, "getUserAgent");
-function getRuntimeSegment() {
-  if (typeof navigator !== "undefined") {
-    return "Cloudflare-Workers";
-  } else if (typeof process !== "undefined" && typeof process.versions !== "undefined") {
-    return `Node/${process.versions.node} (${process.platform}; ${process.arch})`;
-  } else if ("EdgeRuntime" in globalThis) {
-    return `Vercel-Edge-Runtime`;
-  } else {
-    return `UnknownRuntime`;
-  }
-}
-__name(getRuntimeSegment, "getRuntimeSegment");
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/extension.js
-var EXTENSION_NAME = "@prisma/extension-accelerate";
-var FETCH_FAILURE_MESSAGE = "Unable to connect to the Accelerate API. This may be due to a network or DNS issue. Please check your connection and the Accelerate connection string. For details, visit https://www.prisma.io/docs/accelerate/troubleshoot.";
-function makeWithCacheHeaders(fetcher) {
-  const userAgent = getUserAgent();
-  let machineHint = void 0;
-  return async (params) => {
-    const { args } = params;
-    const { cacheStrategy, __accelerateInfo = false, ...rest } = args;
-    let info = null;
-    const { __internalParams, query } = params;
-    __internalParams.customDataProxyFetch = () => {
-      return async (url, options) => {
-        const cacheControl = new Array();
-        if (typeof cacheStrategy?.ttl === "number") {
-          cacheControl.push(`max-age=${cacheStrategy.ttl}`);
-        }
-        if (typeof cacheStrategy?.swr === "number") {
-          cacheControl.push(`stale-while-revalidate=${cacheStrategy.swr}`);
-        }
-        const cacheTags = cacheStrategy?.tags?.join(",") ?? "";
-        options.headers = {
-          ...options.headers,
-          "cache-control": cacheControl.length > 0 ? cacheControl.join(",") : `no-cache`,
-          "user-agent": userAgent,
-          ...cacheTags.length > 0 ? { "accelerate-cache-tags": cacheTags } : {}
-        };
-        if (machineHint) {
-          options.headers["accelerate-query-engine-jwt"] = machineHint;
-        }
-        try {
-          const response = await fetcher(url, options);
-          info = {
-            cacheStatus: response.headers.get("accelerate-cache-status"),
-            lastModified: new Date(response.headers.get("last-modified") ?? ""),
-            region: response.headers.get("cf-ray")?.split("-")[1] ?? "unspecified",
-            requestId: response.headers.get("cf-ray") ?? "unspecified",
-            signature: response.headers.get("accelerate-signature") ?? "unspecified"
-          };
-          machineHint = response.headers.get("accelerate-query-engine-jwt") ?? void 0;
-          return response;
-        } catch (e) {
-          throw new Error(FETCH_FAILURE_MESSAGE);
-        }
-      };
-    };
-    if (__accelerateInfo) {
-      const data = await query(rest, __internalParams);
-      return { data, info };
-    } else {
-      return query(rest, __internalParams);
-    }
-  };
-}
-__name(makeWithCacheHeaders, "makeWithCacheHeaders");
-function makeAccelerateExtension(fetcher) {
-  const enableCtxParent = compareSemVer("5.1.0", import_default_index2.default.Prisma.prismaVersion.client) >= 0;
-  return import_default_index2.default.Prisma.defineExtension((client) => {
-    const withCacheHeaders = makeWithCacheHeaders(fetcher);
-    const apiKeyPromise = client._engine.start().then(() => client._engine.apiKey?.());
-    const xclient = client.$extends({
-      name: EXTENSION_NAME,
-      query: {
-        $allModels: {
-          // also apply withCacheHeaders to mutations for machine hint benefit
-          $allOperations: withCacheHeaders
-        }
-      }
-    });
-    return xclient.$extends({
-      name: EXTENSION_NAME,
-      client: {
-        $accelerate: {
-          /**
-           * Initiates an invalidation request for the specified cache tag values.
-           *
-           * A tag may only contain alphanumeric characters and underscores.
-           * Each tag may contain a maximum of 64 characters.
-           * A maximum of 5 tags may be invalidated per call.
-           */
-          invalidate: async (input) => {
-            const apiKey = await apiKeyPromise;
-            if (!apiKey) {
-              return { requestId: "unspecified" };
-            }
-            let response;
-            try {
-              response = await fetcher(`https://accelerate.prisma-data.net/invalidate`, {
-                method: "POST",
-                headers: {
-                  authorization: `Bearer ${apiKey}`,
-                  "content-type": "application/json"
-                },
-                body: JSON.stringify(input)
-              });
-            } catch (e) {
-              throw new Error(FETCH_FAILURE_MESSAGE);
-            }
-            if (!response?.ok) {
-              const body = await response.text();
-              throw new Error(`Failed to invalidate Accelerate cache. Response was ${response.status} ${response.statusText}. ${body}`);
-            }
-            void response.body?.cancel();
-            return {
-              requestId: response.headers.get("cf-ray") ?? "unspecified"
-            };
-          }
-        }
-      },
-      model: {
-        $allModels: {
-          // TODO: these functions are repetitive. Is there a type we can use to generic this?
-          // TODO: can we define these in a map that ensures query and model overrides stay in sync/
-          aggregate(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.aggregate(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.aggregate({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          count(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.count(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.count({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          findFirst(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.findFirst(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.findFirst({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          findFirstOrThrow(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.findFirstOrThrow(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.findFirstOrThrow({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          findMany(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.findMany(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.findMany({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          findUnique(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.findUnique(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.findUnique({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          findUniqueOrThrow(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.findUniqueOrThrow(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.findUniqueOrThrow({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          },
-          groupBy(args) {
-            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
-            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
-            const prismaPromise = model.groupBy(args);
-            return Object.assign(prismaPromise, {
-              withAccelerateInfo() {
-                return model.groupBy({
-                  ...args,
-                  __accelerateInfo: true
-                });
-              }
-            });
-          }
-        }
-      }
-    });
-  });
-}
-__name(makeAccelerateExtension, "makeAccelerateExtension");
-
-// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/entry.fetch.js
-function withAccelerate() {
-  return makeAccelerateExtension(globalThis.fetch);
-}
-__name(withAccelerate, "withAccelerate");
 
 // node_modules/.pnpm/hono@4.6.19/node_modules/hono/dist/middleware/jwt/index.js
 init_modules_watch_stub();
@@ -13561,9 +13285,319 @@ var verify2 = Jwt.verify;
 var decode2 = Jwt.decode;
 var sign2 = Jwt.sign;
 
+// src/middleWare.ts
+init_modules_watch_stub();
+var app = new Hono2();
+async function authMiddleware(c, next) {
+  console.log("Middleware called!");
+  const header = c.req.header("Authorization");
+  console.log("header is:", header);
+  if (!header) {
+    c.status(401);
+    return c.json({ error: "unauthorized header" });
+  }
+  try {
+    const token = header.split(" ")[1];
+    console.log("token from local storage:", token);
+    const verifiedToken = await verify2(token, c.env.JWT_SECRET);
+    console.log("Verified Id is:", verifiedToken.id);
+    if (!verifiedToken.id) {
+      c.status(403);
+      c.json({ error: "unauthorized token" });
+    } else {
+      console.log("in next");
+      c.set("userId", verifiedToken.id);
+      await next();
+    }
+  } catch (err) {
+    c.status(403);
+    return c.json({ message: "unauthorized for middleware!" });
+  }
+}
+__name(authMiddleware, "authMiddleware");
+
+// src/routes/user.ts
+var import_edge = __toESM(require_edge3());
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/entry.fetch.js
+init_modules_watch_stub();
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/extension.js
+init_modules_watch_stub();
+var import_default_index2 = __toESM(require_default_index(), 1);
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/semver.js
+init_modules_watch_stub();
+function compareSemVer(a, b) {
+  const [major1 = 0, minor1 = 0, patch1 = 0] = a.split(".").map(Number);
+  const [major2 = 0, minor2 = 0, patch2 = 0] = b.split(".").map(Number);
+  const major = major2 - major1;
+  const minor = minor2 - minor1;
+  const patch = patch2 - patch1;
+  return major || minor || patch;
+}
+__name(compareSemVer, "compareSemVer");
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/user-agent.js
+init_modules_watch_stub();
+var import_default_index = __toESM(require_default_index(), 1);
+function getUserAgent() {
+  const prismaVersion = import_default_index.default.Prisma.prismaVersion;
+  const parts = [
+    getRuntimeSegment(),
+    `PrismaEngine/${prismaVersion.engine}`,
+    `PrismaClient/${prismaVersion.client}`
+  ];
+  return parts.join(" ");
+}
+__name(getUserAgent, "getUserAgent");
+function getRuntimeSegment() {
+  if (typeof navigator !== "undefined") {
+    return "Cloudflare-Workers";
+  } else if (typeof process !== "undefined" && typeof process.versions !== "undefined") {
+    return `Node/${process.versions.node} (${process.platform}; ${process.arch})`;
+  } else if ("EdgeRuntime" in globalThis) {
+    return `Vercel-Edge-Runtime`;
+  } else {
+    return `UnknownRuntime`;
+  }
+}
+__name(getRuntimeSegment, "getRuntimeSegment");
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/extension.js
+var EXTENSION_NAME = "@prisma/extension-accelerate";
+var FETCH_FAILURE_MESSAGE = "Unable to connect to the Accelerate API. This may be due to a network or DNS issue. Please check your connection and the Accelerate connection string. For details, visit https://www.prisma.io/docs/accelerate/troubleshoot.";
+function makeWithCacheHeaders(fetcher) {
+  const userAgent = getUserAgent();
+  let machineHint = void 0;
+  return async (params) => {
+    const { args } = params;
+    const { cacheStrategy, __accelerateInfo = false, ...rest } = args;
+    let info = null;
+    const { __internalParams, query } = params;
+    __internalParams.customDataProxyFetch = () => {
+      return async (url, options) => {
+        const cacheControl = new Array();
+        if (typeof cacheStrategy?.ttl === "number") {
+          cacheControl.push(`max-age=${cacheStrategy.ttl}`);
+        }
+        if (typeof cacheStrategy?.swr === "number") {
+          cacheControl.push(`stale-while-revalidate=${cacheStrategy.swr}`);
+        }
+        const cacheTags = cacheStrategy?.tags?.join(",") ?? "";
+        options.headers = {
+          ...options.headers,
+          "cache-control": cacheControl.length > 0 ? cacheControl.join(",") : `no-cache`,
+          "user-agent": userAgent,
+          ...cacheTags.length > 0 ? { "accelerate-cache-tags": cacheTags } : {}
+        };
+        if (machineHint) {
+          options.headers["accelerate-query-engine-jwt"] = machineHint;
+        }
+        try {
+          const response = await fetcher(url, options);
+          info = {
+            cacheStatus: response.headers.get("accelerate-cache-status"),
+            lastModified: new Date(response.headers.get("last-modified") ?? ""),
+            region: response.headers.get("cf-ray")?.split("-")[1] ?? "unspecified",
+            requestId: response.headers.get("cf-ray") ?? "unspecified",
+            signature: response.headers.get("accelerate-signature") ?? "unspecified"
+          };
+          machineHint = response.headers.get("accelerate-query-engine-jwt") ?? void 0;
+          return response;
+        } catch (e) {
+          throw new Error(FETCH_FAILURE_MESSAGE);
+        }
+      };
+    };
+    if (__accelerateInfo) {
+      const data = await query(rest, __internalParams);
+      return { data, info };
+    } else {
+      return query(rest, __internalParams);
+    }
+  };
+}
+__name(makeWithCacheHeaders, "makeWithCacheHeaders");
+function makeAccelerateExtension(fetcher) {
+  const enableCtxParent = compareSemVer("5.1.0", import_default_index2.default.Prisma.prismaVersion.client) >= 0;
+  return import_default_index2.default.Prisma.defineExtension((client) => {
+    const withCacheHeaders = makeWithCacheHeaders(fetcher);
+    const apiKeyPromise = client._engine.start().then(() => client._engine.apiKey?.());
+    const xclient = client.$extends({
+      name: EXTENSION_NAME,
+      query: {
+        $allModels: {
+          // also apply withCacheHeaders to mutations for machine hint benefit
+          $allOperations: withCacheHeaders
+        }
+      }
+    });
+    return xclient.$extends({
+      name: EXTENSION_NAME,
+      client: {
+        $accelerate: {
+          /**
+           * Initiates an invalidation request for the specified cache tag values.
+           *
+           * A tag may only contain alphanumeric characters and underscores.
+           * Each tag may contain a maximum of 64 characters.
+           * A maximum of 5 tags may be invalidated per call.
+           */
+          invalidate: async (input) => {
+            const apiKey = await apiKeyPromise;
+            if (!apiKey) {
+              return { requestId: "unspecified" };
+            }
+            let response;
+            try {
+              response = await fetcher(`https://accelerate.prisma-data.net/invalidate`, {
+                method: "POST",
+                headers: {
+                  authorization: `Bearer ${apiKey}`,
+                  "content-type": "application/json"
+                },
+                body: JSON.stringify(input)
+              });
+            } catch (e) {
+              throw new Error(FETCH_FAILURE_MESSAGE);
+            }
+            if (!response?.ok) {
+              const body = await response.text();
+              throw new Error(`Failed to invalidate Accelerate cache. Response was ${response.status} ${response.statusText}. ${body}`);
+            }
+            void response.body?.cancel();
+            return {
+              requestId: response.headers.get("cf-ray") ?? "unspecified"
+            };
+          }
+        }
+      },
+      model: {
+        $allModels: {
+          // TODO: these functions are repetitive. Is there a type we can use to generic this?
+          // TODO: can we define these in a map that ensures query and model overrides stay in sync/
+          aggregate(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.aggregate(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.aggregate({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          count(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.count(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.count({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          findFirst(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.findFirst(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.findFirst({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          findFirstOrThrow(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.findFirstOrThrow(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.findFirstOrThrow({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          findMany(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.findMany(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.findMany({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          findUnique(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.findUnique(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.findUnique({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          findUniqueOrThrow(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.findUniqueOrThrow(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.findUniqueOrThrow({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          },
+          groupBy(args) {
+            const ctx = import_default_index2.default.Prisma.getExtensionContext(this);
+            const model = enableCtxParent ? ctx.$parent[ctx.$name] : xclient[ctx.name];
+            const prismaPromise = model.groupBy(args);
+            return Object.assign(prismaPromise, {
+              withAccelerateInfo() {
+                return model.groupBy({
+                  ...args,
+                  __accelerateInfo: true
+                });
+              }
+            });
+          }
+        }
+      }
+    });
+  });
+}
+__name(makeAccelerateExtension, "makeAccelerateExtension");
+
+// node_modules/.pnpm/@prisma+extension-accelerate@1.2.1_@prisma+client@6.3.0_prisma@6.3.0_/node_modules/@prisma/extension-accelerate/dist/esm/entry.fetch.js
+function withAccelerate() {
+  return makeAccelerateExtension(globalThis.fetch);
+}
+__name(withAccelerate, "withAccelerate");
+
 // src/routes/user.ts
 var import_medium_common = __toESM(require_dist());
 var userRouter = new Hono2().basePath("/user");
+userRouter.use("/lognedinuser", authMiddleware);
 userRouter.post("/signup", async (c) => {
   console.log("signup route called!");
   const prisma = new import_edge.PrismaClient({
@@ -13634,39 +13668,35 @@ userRouter.post("/signin", async (c) => {
     }
   }
 });
-
-// src/routes/blog.ts
-init_modules_watch_stub();
-
-// src/middleWare.ts
-init_modules_watch_stub();
-var app = new Hono2();
-async function authMiddleware(c, next) {
-  console.log("Middleware called!");
-  const header = c.req.header("Authorization");
-  if (!header) {
-    c.status(401);
-    return c.json({ error: "unauthorized" });
+userRouter.post("/lognedinuser", async (c) => {
+  console.log("logineduser hit");
+  const prisma = new import_edge.PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL
+  }).$extends(withAccelerate());
+  const userId = c.get("userId");
+  console.log("userId from lognedin user is :", userId);
+  if (!userId) {
+    return c.json({
+      message: "User id is missing from the request!"
+    });
   }
   try {
-    const token = header.split(" ")[1];
-    const verifiedToken = await verify2(token, c.env.JWT_SECRET);
-    console.log("Verified Id is:", verifiedToken.id);
-    if (!verifiedToken.id) {
-      c.status(403);
-      c.json({ error: "unauthorized" });
-    } else {
-      c.set("userId", verifiedToken.id);
-      await next();
-    }
+    const userInfo = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    });
+    return c.json(userInfo);
   } catch (err) {
-    c.status(403);
-    return c.json({ message: "unauthorized!" });
+    console.log(err);
+    return c.json({
+      message: "Error occured while getting data of logined user!"
+    });
   }
-}
-__name(authMiddleware, "authMiddleware");
+});
 
 // src/routes/blog.ts
+init_modules_watch_stub();
 var import_edge2 = __toESM(require_edge3());
 var import_medium_common2 = __toESM(require_dist());
 var blogRouter = new Hono2().basePath("/blog");
@@ -13738,14 +13768,24 @@ blogRouter.put("/", async (c) => {
   }
 });
 blogRouter.get("/bulk", async (c) => {
+  console.log("bulk end point hit!");
   const prisma = new import_edge2.PrismaClient({
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
   try {
-    const allBlogs = await prisma.blog.findMany({});
-    return c.json({
-      blogs: allBlogs
+    const allBlogs = await prisma.blog.findMany({
+      select: {
+        title: true,
+        content: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
+    return c.json(allBlogs);
   } catch (err) {
     c.status(411);
     return c.json({
@@ -13907,7 +13947,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-eoSL0M/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-8SD0M0/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -13940,7 +13980,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-eoSL0M/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-8SD0M0/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

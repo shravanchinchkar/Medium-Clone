@@ -1,18 +1,69 @@
-import { BrowserRouter,Routes,Route } from "react-router-dom";
-import { Signup } from "./pages/Signup";
-import { Signin } from "./pages/Signin";
 import { Blog } from "./pages/Blog";
 import { Blogs } from "./pages/Blogs";
+import { Signup } from "./pages/Signup";
+import { Signin } from "./pages/Signin";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PrivateRouteWrapper } from "./auth/PrivateRouterWrapper";
+import { WriteBlog } from "./pages/WriteBlog";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/signup" element={<Signup/>}></Route>
-          <Route path="/signin" element={<Signin/>}></Route>
-          <Route path="/blog/:id" element={<Blog/>}></Route>
-          <Route path="/blogs" element={<Blogs/>}></Route>
+          {/* Following route is for / endpoint */}
+          <Route
+            path="/"
+            element={
+              <PrivateRouteWrapper>
+                <Signin />
+              </PrivateRouteWrapper>
+            }
+          />
+          {/* Following route is for  /signup endpoint */}
+          <Route
+            path="/signup"
+            element={
+              <PrivateRouteWrapper>
+                <Signup />
+              </PrivateRouteWrapper>
+            }
+          />
+          {/* Following route is for /signin endpoint */}
+          <Route
+            path="/signin"
+            element={
+              <PrivateRouteWrapper>
+                <Signin />
+              </PrivateRouteWrapper>
+            }
+          />
+          {/* Following route is for /blogs end point */}
+          <Route
+            path="/blogs"
+            element={
+              <PrivateRouteWrapper>
+                <Blogs />
+              </PrivateRouteWrapper>
+            }
+          />
+          {/* Following route is for fetching specific blog */}
+          <Route
+            path="/blog/:id"
+            element={
+              <PrivateRouteWrapper>
+                <Blog />
+              </PrivateRouteWrapper>
+            }
+          ></Route>
+          <Route
+            path="/writeblog"
+            element={
+              <PrivateRouteWrapper>
+                <WriteBlog />
+              </PrivateRouteWrapper>
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

@@ -1,13 +1,14 @@
 import { Hono } from "hono";
+import { sign } from "hono/jwt";
+import { authMiddleware } from "../middleWare";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate"; //this command is used to run prisma in acclerate mode, means it helps to connect to the connection pool not directly to the DB
-import { sign } from "hono/jwt";
-import { signupInput,signinInput } from "@shravanchinchkar/medium-common";
+import { signupInput, signinInput } from "@shravanchinchkar/medium-common";
 
 //Whenever we have an environment variable we need to pass a generic has below, so that hono understand the DATABASE_URL is a string and it dose not gives the error
 
 //Following is the cnnection Pool URL:
-//  prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNmVkZWZlMGUtZTdiMC00YTdiLTk5NTQtOGUzODE5OWFmZmRiIiwidGVuYW50X2lkIjoiOTI3NGU3NWFmYjYwZDJlNmIzYzY4ZTliODBlZThjNTljYzM3MWI5YzIwZjJlMzQ4YzQzOTVjMDQzMzFiODQ0MSIsImludGVybmFsX3NlY3JldCI6IjcyNDc0YTY0LWU4NDAtNGYyZC04YzkxLThiMDdmMzY1YTE2NSJ9.e8bCn4biras2V61O6RZf4rYZrYERq0R8kFDXin7595Q
+//prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiNmVkZWZlMGUtZTdiMC00YTdiLTk5NTQtOGUzODE5OWFmZmRiIiwidGVuYW50X2lkIjoiOTI3NGU3NWFmYjYwZDJlNmIzYzY4ZTliODBlZThjNTljYzM3MWI5YzIwZjJlMzQ4YzQzOTVjMDQzMzFiODQ0MSIsImludGVybmFsX3NlY3JldCI6IjcyNDc0YTY0LWU4NDAtNGYyZC04YzkxLThiMDdmMzY1YTE2NSJ9.e8bCn4biras2V61O6RZf4rYZrYERq0R8kFDXin7595Q
 
 // Following is the JWT Secret:-
 //prod_shravchinchkar2610200313
@@ -18,9 +19,11 @@ export const userRouter = new Hono<{
   };
 }>().basePath("/user");
 
+userRouter.use("/lognedinuser", authMiddleware);
+
 //Todo:- password hashing
 userRouter.post("/signup", async (c) => {
-  console.log("signup route called!")
+  console.log("signup route called!");
   // The environment variable is accessible only inside an route in prisma, so we need to initialize the prisma client in each route
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -28,15 +31,14 @@ userRouter.post("/signup", async (c) => {
 
   //following line get the body from the user
   const body = await c.req.json();
-  console.log("signup body:",body);
+  console.log("signup body:", body);
 
   const { success } = signupInput.safeParse(body);
-  const zodData= signupInput.safeParse(body);
-
+  const zodData = signupInput.safeParse(body);
 
   if (!success) {
-    console.log("zod data:",zodData)
-    console.log("zod failed!")
+    console.log("zod data:", zodData);
+    console.log("zod failed!");
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
   } else {
@@ -94,7 +96,7 @@ userRouter.post("/signin", async (c) => {
         const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET);
         return c.json({
           message: "SignedIn successful!",
-          token: token, 
+          token: token,
         });
       }
     } catch (e) {
@@ -103,3 +105,39 @@ userRouter.post("/signin", async (c) => {
     }
   }
 });
+
+//following is the route used to get the login user details
+
+userRouter.get("/lognedinuser",async(c:any)=>{
+  console.log("logineduser hit")
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+
+  const userId=c.get("userId");
+  console.log("userId from lognedin user is :",userId);
+
+  if(!userId){
+    return c.json({
+      message:"User id is missing from the request!"
+    })
+  }
+
+  try{
+    const userInfo=await prisma.user.findUnique({
+      where:{
+        id:userId
+      },
+      select:{
+        name:true
+      }
+    })
+    return c.json(userInfo);
+  }catch(err){
+    console.log(err);
+    return c.json({
+      message:"Error occured while getting data of logined user!"
+    })
+  }
+})

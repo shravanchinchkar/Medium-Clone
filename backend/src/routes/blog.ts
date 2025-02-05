@@ -2,7 +2,10 @@ import { Hono } from "hono";
 import { authMiddleware } from "../middleWare";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { createBlogInput,updateBlogInput } from "@shravanchinchkar/medium-common";
+import {
+  createBlogInput,
+  updateBlogInput,
+} from "@shravanchinchkar/medium-common";
 
 export const blogRouter = new Hono<{
   Bindings: {
@@ -26,10 +29,8 @@ blogRouter.post("/", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
   const body = await c.req.json();
   const { success } = createBlogInput.safeParse(body);
-
   if (!success) {
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
@@ -62,10 +63,8 @@ blogRouter.put("/", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
   const body = await c.req.json();
   const { success } = updateBlogInput.safeParse(body);
-
   if (!success) {
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
@@ -98,15 +97,24 @@ blogRouter.put("/", async (c) => {
 //following blog Return all the blogs on the dashboard!
 //Need To add pagination to this route
 blogRouter.get("/bulk", async (c) => {
+  console.log("bulk end point hit!");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
   try {
-    const allBlogs = await prisma.blog.findMany({});
-    return c.json({
-      blogs: allBlogs,
+    const allBlogs = await prisma.blog.findMany({
+      select: {
+        title: true,
+        content: true,
+        id: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
+    return c.json(allBlogs);
   } catch (err) {
     c.status(411);
     return c.json({
@@ -121,14 +129,22 @@ blogRouter.get("/:id", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
   const reqParams = c.req.param("id");
-  //   const body = await c.req.json();
-
   try {
     const findBlog = await prisma.blog.findFirst({
       where: {
         id: reqParams,
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published:true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
     return c.json({

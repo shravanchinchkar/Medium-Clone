@@ -7,6 +7,9 @@ import { AuthButton } from "../components/AuthButton";
 import { AuthHeader } from "../components/AuthHeader";
 import { LabeledInput } from "../components/LabeledInput";
 import { SignupInput } from "@shravanchinchkar/medium-common";
+import { useRecoilState } from "recoil";
+import { isSubmitting } from "../store/atom/atom";
+import { SubmittingButton } from "../components/SubmittingButton";
 
 export const Signup = () => {
   const [signupInputs, setsignupInputs] = useState<SignupInput>({
@@ -15,13 +18,20 @@ export const Signup = () => {
     password: "",
   });
   const navigate=useNavigate();
+  const [isSubmit,setIsSubmit]=useRecoilState(isSubmitting);
+
+
 
   async function signup() {
     try{
+      setIsSubmit(true);
       await axios.post(`${BACKEND_URL}/api/v1/user/signup`,signupInputs);
       navigate("/signin");
+      setIsSubmit(false);
     }catch(err){
-
+      setIsSubmit(false);
+      console.log(err);
+      alert("Signup Fail!")
     }
   }
 
@@ -70,8 +80,8 @@ export const Signup = () => {
             }}
             inputType={"password"}
           />
-          
-          <AuthButton buttonName={"Signup"} onClick={signup}/>
+          {isSubmit===false?<AuthButton buttonName={"Signup"} onClick={signup}/>:null}
+          {isSubmit?<SubmittingButton/>:null}
         </div>
       </div>
       <div className="hidden md:block">
