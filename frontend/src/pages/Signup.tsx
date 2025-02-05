@@ -20,8 +20,6 @@ export const Signup = () => {
   const navigate=useNavigate();
   const [isSubmit,setIsSubmit]=useRecoilState(isSubmitting);
 
-
-
   async function signup() {
     try{
       setIsSubmit(true);
@@ -30,11 +28,9 @@ export const Signup = () => {
       setIsSubmit(false);
     }catch(err){
       setIsSubmit(false);
-      console.log(err);
       alert("Signup Fail!")
     }
   }
-
   return (
     <div className="md:grid md:grid-cols-2">
       <div className="h-screen flex justify-center items-center">

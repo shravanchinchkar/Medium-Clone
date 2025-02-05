@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
-import {toast} from "react-toastify"
+import { toast } from "react-toastify";
 import { BACKEND_URL } from "../config";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { Quote } from "../components/Quote";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/AuthButton";
@@ -18,9 +18,8 @@ export const Signin = () => {
     password: "",
   });
   const navigate = useNavigate();
-  const [isAuth, setIsAuth] = useRecoilState(isAuthenticated);
-  const [isSubmit,setIsSubmit]=useRecoilState(isSubmitting);
-
+  const setIsAuth = useSetRecoilState(isAuthenticated);
+  const [isSubmit, setIsSubmit] = useRecoilState(isSubmitting);
 
   async function signin() {
     try {
@@ -33,13 +32,21 @@ export const Signin = () => {
       const jwt = response.data;
       localStorage.setItem("mediumToken", jwt.token);
       setIsAuth(localStorage.getItem("mediumToken"));
-      console.log("isAut form Signin component!", isAuth);
       navigate("/blogs");
-      toast("Login Successful",{position:"bottom-right",type:"success",theme:"light",autoClose:2000})
+      toast("Login Successful", {
+        position: "bottom-right",
+        type: "success",
+        theme: "light",
+        autoClose: 2000,
+      });
     } catch (err) {
       setIsSubmit(false);
-      console.log(err);
-      toast.error("Invalid Credentials!",{position:"bottom-right",type:"error",theme:"light",autoClose:2000});
+      toast.error("Invalid Credentials!", {
+        position: "bottom-right",
+        type: "error",
+        theme: "light",
+        autoClose: 2000,
+      });
     }
   }
   return (
@@ -76,8 +83,10 @@ export const Signin = () => {
             }}
             inputType={"password"}
           />
-          {isSubmit===false?<AuthButton buttonName={"Signin"} onClick={signin} />:null}
-          {isSubmit?<SubmittingButton/>:null}
+          {isSubmit === false ? (
+            <AuthButton buttonName={"Signin"} onClick={signin} />
+          ) : null}
+          {isSubmit ? <SubmittingButton /> : null}
         </div>
       </div>
       <div className="hidden md:block">

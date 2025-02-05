@@ -13291,18 +13291,14 @@ var sign2 = Jwt.sign;
 init_modules_watch_stub();
 var app = new Hono2();
 async function authMiddleware(c, next) {
-  console.log("Middleware called!");
   const header = c.req.header("Authorization");
-  console.log("header is:", header);
   if (!header) {
     c.status(401);
     return c.json({ error: "unauthorized header" });
   }
   try {
     const token = header.split(" ")[1];
-    console.log("token from local storage:", token);
     const verifiedToken = await verify2(token, c.env.JWT_SECRET);
-    console.log("Verified Id is:", verifiedToken.id);
     if (!verifiedToken.id) {
       c.status(403);
       c.json({ error: "unauthorized token" });
@@ -13601,17 +13597,12 @@ var import_medium_common = __toESM(require_dist());
 var userRouter = new Hono2().basePath("/user");
 userRouter.use("/lognedinuser", authMiddleware);
 userRouter.post("/signup", async (c) => {
-  console.log("signup route called!");
   const prisma = new import_edge.PrismaClient({
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
   const body = await c.req.json();
-  console.log("signup body:", body);
   const { success } = import_medium_common.signupInput.safeParse(body);
-  const zodData = import_medium_common.signupInput.safeParse(body);
   if (!success) {
-    console.log("zod data:", zodData);
-    console.log("zod failed!");
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
   } else {
@@ -13623,7 +13614,6 @@ userRouter.post("/signup", async (c) => {
           password: body.password
         }
       });
-      console.log("created user is:", user);
       const token = await sign2({ id: user.id }, c.env.JWT_SECRET);
       return c.json({
         message: "SignedUp!",
@@ -13657,7 +13647,6 @@ userRouter.post("/signin", async (c) => {
         c.status(403);
         return c.json({ error: "Invalid Credentials" });
       } else {
-        console.log("user is:", checkUser);
         const token = await sign2({ id: checkUser.id }, c.env.JWT_SECRET);
         return c.json({
           message: "SignedIn successful!",
@@ -13671,12 +13660,10 @@ userRouter.post("/signin", async (c) => {
   }
 });
 userRouter.get("/lognedinuser", async (c) => {
-  console.log("logineduser hit");
   const prisma = new import_edge.PrismaClient({
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
   const userId = c.get("userId");
-  console.log("userId from lognedin user is :", userId);
   if (!userId) {
     return c.json({
       message: "User id is missing from the request!"
@@ -13693,7 +13680,6 @@ userRouter.get("/lognedinuser", async (c) => {
     });
     return c.json(userInfo);
   } catch (err) {
-    console.log(err);
     return c.json({
       message: "Error occured while getting data of logined user!"
     });
@@ -13707,7 +13693,6 @@ var import_medium_common2 = __toESM(require_dist());
 var blogRouter = new Hono2().basePath("/blog");
 blogRouter.use("/*", authMiddleware);
 blogRouter.post("/", async (c) => {
-  console.log("In POST route for Blog!");
   const prisma = new import_edge2.PrismaClient({
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
@@ -13719,7 +13704,6 @@ blogRouter.post("/", async (c) => {
   } else {
     try {
       const userId = c.get("userId");
-      console.log("userId is :", userId);
       const createdBlog = await prisma.blog.create({
         data: {
           authorId: userId,
@@ -13732,7 +13716,6 @@ blogRouter.post("/", async (c) => {
         blog: createdBlog
       });
     } catch (err) {
-      console.log(err);
       c.status(403);
       return c.json({ message: "Can't Upload the Blog!" });
     }
@@ -13763,7 +13746,6 @@ blogRouter.put("/", async (c) => {
         updatedBlog
       });
     } catch (err) {
-      console.log(err);
       c.status(403);
       return c.json({
         blogId: body.id,
@@ -13773,7 +13755,6 @@ blogRouter.put("/", async (c) => {
   }
 });
 blogRouter.get("/bulk", async (c) => {
-  console.log("bulk end point hit!");
   const prisma = new import_edge2.PrismaClient({
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
@@ -13827,7 +13808,6 @@ blogRouter.get("/:id", async (c) => {
       blogIs: findBlog
     });
   } catch (err) {
-    console.log(err);
     c.status(411);
     return c.json({ message: "Blog not present!" });
   }

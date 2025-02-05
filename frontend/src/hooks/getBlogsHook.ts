@@ -14,7 +14,7 @@ interface Blogs {
 }
 
 export const useBlogs = () => {
-  console.log("useBlogs() called!");
+
 
   const [loading, setLoading] = useState(true);
   const [blog, setBlogs] = useState<Blogs[]>([]);
@@ -27,15 +27,11 @@ export const useBlogs = () => {
           Authorization: `Bearer ${localStorage.getItem("mediumToken")}`,
         },
       });
-      console.log("response is :", response);
       const blogs = response.data;
-      console.log("Blogs from backend:", blogs);
       setBlogs(blogs);
       setLoading(false);
       return blogs;
     } catch (err) {
-      console.log(err);
-      console.log(err);
       navigate("/");
       return;
     }

@@ -25,8 +25,6 @@ blogRouter.use("/*", authMiddleware);
 
 //following route create the blog
 blogRouter.post("/", async (c) => {
-  console.log("In POST route for Blog!");
-
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -34,14 +32,13 @@ blogRouter.post("/", async (c) => {
   const body = await c.req.json();
 
   const { success } = createBlogInput.safeParse(body);
-  
+
   if (!success) {
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
   } else {
     try {
       const userId = c.get("userId");
-      console.log("userId is :", userId);
       const createdBlog = await prisma.blog.create({
         data: {
           authorId: userId,
@@ -54,7 +51,6 @@ blogRouter.post("/", async (c) => {
         blog: createdBlog,
       });
     } catch (err) {
-      console.log(err);
       c.status(403);
       return c.json({ message: "Can't Upload the Blog!" });
     }
@@ -88,7 +84,6 @@ blogRouter.put("/", async (c) => {
         updatedBlog: updatedBlog,
       });
     } catch (err) {
-      console.log(err);
       c.status(403);
       return c.json({
         blogId: body.id,
@@ -101,7 +96,6 @@ blogRouter.put("/", async (c) => {
 //following blog Return all the blogs on the dashboard!
 //Need To add pagination to this route
 blogRouter.get("/bulk", async (c) => {
-  console.log("bulk end point hit!");
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -110,7 +104,7 @@ blogRouter.get("/bulk", async (c) => {
       select: {
         title: true,
         content: true,
-        createdAt:true,
+        createdAt: true,
         id: true,
         author: {
           select: {
@@ -144,8 +138,8 @@ blogRouter.get("/:id", async (c) => {
         id: true,
         title: true,
         content: true,
-        published:true,
-        createdAt:true,
+        published: true,
+        createdAt: true,
         author: {
           select: {
             name: true,
@@ -158,7 +152,6 @@ blogRouter.get("/:id", async (c) => {
       blogIs: findBlog,
     });
   } catch (err) {
-    console.log(err);
     c.status(411);
     return c.json({ message: "Blog not present!" });
   }

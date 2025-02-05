@@ -23,22 +23,14 @@ userRouter.use("/lognedinuser", authMiddleware);
 
 //Todo:- password hashing
 userRouter.post("/signup", async (c) => {
-  console.log("signup route called!");
   // The environment variable is accessible only inside an route in prisma, so we need to initialize the prisma client in each route
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate()); //this line is imp. if we are using prisma offering acclerate functionality for DB Pooling
-
   //following line get the body from the user
   const body = await c.req.json();
-  console.log("signup body:", body);
-
   const { success } = signupInput.safeParse(body);
-  const zodData = signupInput.safeParse(body);
-
   if (!success) {
-    console.log("zod data:", zodData);
-    console.log("zod failed!");
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
   } else {
@@ -50,13 +42,9 @@ userRouter.post("/signup", async (c) => {
           password: body.password,
         },
       });
-
-      console.log("created user is:", user);
-
       //usually the thing that we need to sign with is Id of the user, so we have taken the id of the user
       //create a token for the user who has signedup
       const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-
       return c.json({
         message: "SignedUp!",
         token: token, //return the token
@@ -73,10 +61,8 @@ userRouter.post("/signin", async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
   const body = await c.req.json();
   const { success } = signinInput.safeParse(body);
-
   if (!success) {
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
@@ -92,7 +78,6 @@ userRouter.post("/signin", async (c) => {
         c.status(403);
         return c.json({ error: "Invalid Credentials" });
       } else {
-        console.log("user is:", checkUser);
         const token = await sign({ id: checkUser.id }, c.env.JWT_SECRET);
         return c.json({
           message: "SignedIn successful!",
@@ -107,37 +92,29 @@ userRouter.post("/signin", async (c) => {
 });
 
 //following is the route used to get the login user details
-
-userRouter.get("/lognedinuser",async(c:any)=>{
-  console.log("logineduser hit")
+userRouter.get("/lognedinuser", async (c: any) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-
-
-  const userId=c.get("userId");
-  console.log("userId from lognedin user is :",userId);
-
-  if(!userId){
+  const userId = c.get("userId");
+  if (!userId) {
     return c.json({
-      message:"User id is missing from the request!"
-    })
+      message: "User id is missing from the request!",
+    });
   }
-
-  try{
-    const userInfo=await prisma.user.findUnique({
-      where:{
-        id:userId
+  try {
+    const userInfo = await prisma.user.findUnique({
+      where: {
+        id: userId,
       },
-      select:{
-        name:true
-      }
-    })
+      select: {
+        name: true,
+      },
+    });
     return c.json(userInfo);
-  }catch(err){
-    console.log(err);
+  } catch (err) {
     return c.json({
-      message:"Error occured while getting data of logined user!"
-    })
+      message: "Error occured while getting data of logined user!",
+    });
   }
-})
+});

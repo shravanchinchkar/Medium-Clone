@@ -9,7 +9,6 @@ export function getInitialLetters(name: string): string {
     // If there are multiple names, get the first and last name's initials
     const firstInitial = parts[0].charAt(0).toUpperCase();
     const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
-    // console.log(`Cooked Initailas are: ${firstInitial} ${lastInitial}`)
     return `${firstInitial}${lastInitial}`;
   }
   return "";

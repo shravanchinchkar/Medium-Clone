@@ -16,7 +16,6 @@ export interface BlogType{
 }
 
 export const useBlog=({id}:{id:string})=>{
-    console.log("in useBlog() hook");
     const [loading,setLoading]=useState(true);
     const [blog,setBlog]=useState<BlogType>({
         id:"",
@@ -29,9 +28,6 @@ export const useBlog=({id}:{id:string})=>{
         createdAt:""
     })
     const [authorName,setAuthorName]=useState("");
-
-    
-
     async function getBlog(){
         try{
             const response=await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`,{
@@ -40,14 +36,12 @@ export const useBlog=({id}:{id:string})=>{
                 }
             });
             const fetchedBlog=response.data.blogIs;
-            console.log("Blog from backend:",fetchedBlog);
             const authorName=fetchedBlog.author.name;
             const res=getInitialLetters(authorName);
             setAuthorName(res);
             setBlog(fetchedBlog);
             setLoading(false);
         }catch(err){
-            console.log(`error while fetching a blog`);
             return err;
         }
     }

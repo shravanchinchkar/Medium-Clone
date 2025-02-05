@@ -22,11 +22,9 @@ export const BlogCard = ({
   const [date,setDate]=useState("");
 
   useEffect(() => {
-    console.log("Author initial effect called");
     const response = getInitialLetters(authorName);
     setinitialLetters(response);
     const formatedDate=formatDate(createdAt);
-    console.log("formated Date:",formatedDate)
     setDate(formatedDate);
   }, []);
 

@@ -5,13 +5,8 @@ import { BlogsSkeleton } from "../skeleton/BlogsSkeleton";
 import { useLognedInUserData } from "../hooks/getLoginedUser";
 
 export const Blogs = () => {
-  console.log("Blogs Mounted");
   const { loading, blog } = useBlogs();
   const { initialLetters } = useLognedInUserData();
-  console.log(
-    "initilas Letters of lognedIn User are from blogs file:",
-    initialLetters
-  );
 
   if (loading) {
     return <BlogsSkeleton />;

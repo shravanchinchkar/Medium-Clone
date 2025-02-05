@@ -10,11 +10,7 @@ export const PublishBlogButton = () => {
   const [title, setTitle] = useRecoilState(blogTitle);
   const [content, setContent] = useRecoilState(blogContent);
   const [isPublishing, setIsPublishing] = useState(false);
-
   const navigate = useNavigate();
-
-  console.log("Title is:", title);
-  console.log("Content is:", content);
 
   async function sendBlog() {
     try {
@@ -31,7 +27,6 @@ export const PublishBlogButton = () => {
           },
         }
       );
-      console.log("response is:-", response);
       setIsPublish(false);
       setIsPublishing(false);
       navigate(`/blog/${response.data.blog.id}`);
