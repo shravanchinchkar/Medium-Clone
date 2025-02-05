@@ -11245,10 +11245,10 @@ var require_dist = __commonJS({
   }
 });
 
-// .wrangler/tmp/bundle-SYD4gQ/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-wx4vhy/middleware-loader.entry.ts
 init_modules_watch_stub();
 
-// .wrangler/tmp/bundle-SYD4gQ/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-wx4vhy/middleware-insertion-facade.js
 init_modules_watch_stub();
 
 // src/index.ts
@@ -13782,6 +13782,7 @@ blogRouter.get("/bulk", async (c) => {
       select: {
         title: true,
         content: true,
+        createdAt: true,
         id: true,
         author: {
           select: {
@@ -13813,6 +13814,7 @@ blogRouter.get("/:id", async (c) => {
         title: true,
         content: true,
         published: true,
+        createdAt: true,
         author: {
           select: {
             name: true
@@ -13963,7 +13965,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-SYD4gQ/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-wx4vhy/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -13996,7 +13998,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-SYD4gQ/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-wx4vhy/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

@@ -1,4 +1,4 @@
-export function formatDate(input: string): string {
+export function formatDate(input: string): string{
   const date = new Date(input);
   const options: Intl.DateTimeFormatOptions = {
     month: "short",

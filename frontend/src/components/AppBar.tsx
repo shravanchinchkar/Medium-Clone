@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Avatar } from "./Avatar";
-import { useNavigate } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { isAuthenticated, isPublished } from "../store/atom/atom";
 import { Link } from "react-router-dom";
 import { WriteBlogButton } from "./WriteBlogButton";
@@ -12,7 +12,9 @@ export const AppBar = ({ initialLetter }: { initialLetter: string }) => {
   const navigate = useNavigate();
   const [display, setDisplay] = useState(false);
   const setIsAuth = useSetRecoilState(isAuthenticated);
-  const isPublish=useRecoilValue(isPublished);
+  const [isPublish,setIsPublish]=useRecoilState(isPublished);
+  const location=useLocation();
+
 
   function displayLogOut() {
     if (!display) {
@@ -20,6 +22,9 @@ export const AppBar = ({ initialLetter }: { initialLetter: string }) => {
     } else {
       setDisplay(false);
     }
+  }
+  if(location.pathname==="/blogs"){
+    setIsPublish(false);
   }
   function logOut() {
     localStorage.removeItem("mediumToken");

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
-import { BACKEND_URL } from "../config"
 import axios from "axios";
+import { BACKEND_URL } from "../config"
+import { useEffect, useState } from "react"
 import { getInitialLetters } from "../utils/getinitialLetters";
 
 
@@ -11,14 +11,25 @@ export interface BlogType{
     }
     title:string,
     content:string,
-    published:boolean
+    published:boolean,
+    createdAt:string
 }
 
 export const useBlog=({id}:{id:string})=>{
     console.log("in useBlog() hook");
     const [loading,setLoading]=useState(true);
-    const [blog,setBlog]=useState<BlogType>();
+    const [blog,setBlog]=useState<BlogType>({
+        id:"",
+        author:{
+            name:""
+        },
+        title:"",
+        content:"",
+        published:false,
+        createdAt:""
+    })
     const [authorName,setAuthorName]=useState("");
+
     
 
     async function getBlog(){
@@ -42,7 +53,6 @@ export const useBlog=({id}:{id:string})=>{
     }
     useEffect(()=>{
         getBlog();
-
     },[])
 
     return{

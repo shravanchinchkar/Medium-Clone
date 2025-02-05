@@ -26,11 +26,15 @@ blogRouter.use("/*", authMiddleware);
 //following route create the blog
 blogRouter.post("/", async (c) => {
   console.log("In POST route for Blog!");
+
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
+
   const body = await c.req.json();
+
   const { success } = createBlogInput.safeParse(body);
+  
   if (!success) {
     c.status(411);
     return c.json({ message: "Incorrect Inputs!" });
@@ -106,6 +110,7 @@ blogRouter.get("/bulk", async (c) => {
       select: {
         title: true,
         content: true,
+        createdAt:true,
         id: true,
         author: {
           select: {
@@ -140,6 +145,7 @@ blogRouter.get("/:id", async (c) => {
         title: true,
         content: true,
         published:true,
+        createdAt:true,
         author: {
           select: {
             name: true,
